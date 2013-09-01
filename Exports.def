@@ -1,0 +1,4 @@
+LIBRARY	"Trifle"
+EXPORTS
+OBSEPlugin_Query
+OBSEPlugin_Load
