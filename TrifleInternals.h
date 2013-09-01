@@ -40,5 +40,6 @@ namespace Settings
 }
 
 _DeclareNopHdlr(SoundManagerPlayBatleMusic, "sloblock to battle music");
+_DeclareMemHdlr(TESDataHandlerPopulatePluginList, "fixes the plugin list init code to skip inactive files");
 
 void CloseTheLoop(void);
