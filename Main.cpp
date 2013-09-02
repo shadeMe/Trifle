@@ -1,7 +1,32 @@
 #include "TrifleInternals.h"
 #include "VersionInfo.h"
 
-IDebugLog gLog("Trifle.log");
+IDebugLog	gLog("Trifle.log");
+
+static void LoadCallbackHandler(void * reserved)
+{
+	// reset music volume
+	thisCall<UInt32>(0x006AA1A0, (*g_osGlobals)->sound, (*g_osGlobals)->sound->musicVolume, true);
+}
+
+static void SaveCallbackHandler(void * reserved)
+{
+	;//
+}
+
+static void NewGameCallbackHandler(void * reserved)
+{
+	thisCall<UInt32>(0x006AA1A0, (*g_osGlobals)->sound, (*g_osGlobals)->sound->musicVolume, true);
+}
+
+void OBSEMessageHandler(OBSEMessagingInterface::Message* Msg)
+{
+	switch (Msg->type)
+	{
+	case OBSEMessagingInterface::kMessage_LoadGame:
+		break;
+	}
+}
 
 extern "C"
 {
@@ -31,6 +56,26 @@ extern "C"
 				_ERROR("OBSE version too old (got %08X expected at least %08X)", obse->obseVersion, OBSE_VERSION_INTEGER);
 				return false;
 			}
+
+			Interfaces::kOBSESerialization = (OBSESerializationInterface *)obse->QueryInterface(kInterface_Serialization);
+			if (!Interfaces::kOBSESerialization)
+			{
+				_MESSAGE("serialization interface not found");
+				return false;
+			}
+
+			if (Interfaces::kOBSESerialization->version < OBSESerializationInterface::kVersion)
+			{
+				_MESSAGE("incorrect serialization version found (got %08X need %08X)", Interfaces::kOBSESerialization->version, OBSESerializationInterface::kVersion);
+				return false;
+			}
+
+			Interfaces::kOBSEMessaging = (OBSEMessagingInterface*)obse->QueryInterface(kInterface_Messaging);
+			if (!Interfaces::kOBSEMessaging)
+			{
+				_MESSAGE("Messaging interface not found");
+				return false;
+			}
 		}
 
 		return true;
@@ -43,6 +88,12 @@ extern "C"
 
 		_MESSAGE("Executing carbon-based lifeforms...\n\n");
 		gLog.Indent();
+
+		Interfaces::kOBSESerialization->SetSaveCallback(Interfaces::kOBSEPluginHandle, SaveCallbackHandler);
+		Interfaces::kOBSESerialization->SetLoadCallback(Interfaces::kOBSEPluginHandle, LoadCallbackHandler);
+		Interfaces::kOBSESerialization->SetNewGameCallback(Interfaces::kOBSEPluginHandle, NewGameCallbackHandler);
+
+		Interfaces::kOBSEMessaging->RegisterListener(Interfaces::kOBSEPluginHandle, "OBSE", OBSEMessageHandler);
 
 		CloseTheLoop();		
 

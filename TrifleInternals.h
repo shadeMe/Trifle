@@ -27,6 +27,9 @@ using namespace SME::MemoryHandler;
 namespace Interfaces
 {
 	extern PluginHandle						kOBSEPluginHandle;
+
+	extern OBSESerializationInterface*		kOBSESerialization;
+	extern OBSEMessagingInterface*			kOBSEMessaging;
 }
 
 class TrifleINIManager : public INI::INIManager
@@ -40,10 +43,14 @@ public:
 namespace Settings
 {
 	extern SME::INI::INISetting				kBattleMusicPlaybackMode;
+	extern SME::INI::INISetting				kBattleMusicMaximumEnemyDistance;
+	extern SME::INI::INISetting				kBattleMusicEnemyLevelDelta;
+	extern SME::INI::INISetting				kBattleMusicDieRollChance;
 }
 
 _DeclareMemHdlr(SoundManagerPlayBatleMusic, "sloblock to battle music");
 _DeclareMemHdlr(SoundManagerMusicPlayback, "");
 _DeclareMemHdlr(TESDataHandlerPopulatePluginList, "fixes the plugin list init code to skip inactive files");
+_DeclareMemHdlr(PlayerCharacterOnHealthDamage, "allows the detection of the player's health deduction");
 
 void CloseTheLoop(void);
