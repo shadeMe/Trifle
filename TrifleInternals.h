@@ -12,10 +12,13 @@
 #include "obse/NiTypes.h"
 #include "obse/ParamInfos.h"
 
+#include <dsound.h>
+
 #include <SME_Prefix.h>
 #include <MemoryHandler.h>
 #include <INIManager.h>
 #include <StringHelpers.h>
+#include <MersenneTwister.h>
 
 
 using namespace SME;
@@ -36,10 +39,11 @@ public:
 
 namespace Settings
 {
-	extern SME::INI::INISetting				kDisableBattleMusic;
+	extern SME::INI::INISetting				kBattleMusicPlaybackMode;
 }
 
-_DeclareNopHdlr(SoundManagerPlayBatleMusic, "sloblock to battle music");
+_DeclareMemHdlr(SoundManagerPlayBatleMusic, "sloblock to battle music");
+_DeclareMemHdlr(SoundManagerMusicPlayback, "");
 _DeclareMemHdlr(TESDataHandlerPopulatePluginList, "fixes the plugin list init code to skip inactive files");
 
 void CloseTheLoop(void);
