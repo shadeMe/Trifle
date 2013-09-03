@@ -59,6 +59,8 @@
       <Filter>OBSE</Filter>
     </ClCompile>
     <ClCompile Include="TrifleInternals.cpp" />
+    <ClCompile Include="Music.cpp" />
+    <ClCompile Include="Sundries.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\obse\obse\GameActorValues.h">
@@ -122,6 +124,8 @@
       <Filter>OBSE</Filter>
     </ClInclude>
     <ClInclude Include="TrifleInternals.h" />
+    <ClInclude Include="Music.h" />
+    <ClInclude Include="Sundries.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\obse\obse\GameRTTI_1_1.inl">

@@ -1,12 +1,13 @@
 #include "TrifleInternals.h"
+#include "Music.h"
+#include "Sundries.h"
 #include "VersionInfo.h"
 
 IDebugLog	gLog("Trifle.log");
 
 static void LoadCallbackHandler(void * reserved)
 {
-	// reset music volume
-	thisCall<UInt32>(0x006AA1A0, (*g_osGlobals)->sound, (*g_osGlobals)->sound->musicVolume, true);
+	Music::LoadGameCallback();
 }
 
 static void SaveCallbackHandler(void * reserved)
@@ -16,7 +17,7 @@ static void SaveCallbackHandler(void * reserved)
 
 static void NewGameCallbackHandler(void * reserved)
 {
-	thisCall<UInt32>(0x006AA1A0, (*g_osGlobals)->sound, (*g_osGlobals)->sound->musicVolume, true);
+	Music::NewGameCallback();
 }
 
 void OBSEMessageHandler(OBSEMessagingInterface::Message* Msg)
@@ -95,7 +96,8 @@ extern "C"
 
 		Interfaces::kOBSEMessaging->RegisterListener(Interfaces::kOBSEPluginHandle, "OBSE", OBSEMessageHandler);
 
-		CloseTheLoop();		
+		Music::Patch();
+		Sundries::Patch();
 
 		return true;
 	}
