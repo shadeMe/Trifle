@@ -12,8 +12,6 @@
 #include "obse/NiTypes.h"
 #include "obse/ParamInfos.h"
 
-#include <dsound.h>
-
 #include <SME_Prefix.h>
 #include <MemoryHandler.h>
 #include <INIManager.h>
@@ -47,6 +45,8 @@ namespace Settings
 	extern SME::INI::INISetting				kBattleMusicEnemyLevelDelta;
 	extern SME::INI::INISetting				kBattleMusicDieRollChance;
 	extern SME::INI::INISetting				kBattleMusicStopImmediatelyOnCombatEnd;
+	extern SME::INI::INISetting				kBattleMusicStartPreviousTrackOnCombatEnd;
+	extern SME::INI::INISetting				kBattleMusicRestorePreviousTrackPlaybackPosition;
 
 	extern SME::INI::INISetting				kMusicQueueImmediatelyOnCellChange;
 

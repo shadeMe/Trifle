@@ -1,6 +1,8 @@
 #include "TrifleInternals.h"
 #include "Music.h"
 
+#pragma comment(lib, "Strmiids.lib")
+
 namespace Interfaces
 {
 	PluginHandle					kOBSEPluginHandle = kPluginHandle_Invalid;
@@ -14,24 +16,30 @@ TrifleINIManager					TrifleINIManager::Instance;
 
 namespace Settings
 {
-	SME::INI::INISetting			kBattleMusicPlaybackMode("PlaybackMode", "BattleMusic",
+	SME::INI::INISetting			kBattleMusicPlaybackMode("PlaybackMode", "Music::CombatPlayback",
 															"Battle music playback mode", (SInt32)Music::kBattleMusicPlaybackMode_Enabled);
 
-	SME::INI::INISetting			kBattleMusicMaximumEnemyDistance("MaximumEnemyDistance", "BattleMusic",
+	SME::INI::INISetting			kBattleMusicMaximumEnemyDistance("MaximumEnemyDistance", "Music::CombatPlayback",
 																	"Maximum distance b'ween the player and their nearest enemy", (float)1000.0f);
 
-	SME::INI::INISetting			kBattleMusicEnemyLevelDelta("EnemyLevelDelta", "BattleMusic",
+	SME::INI::INISetting			kBattleMusicEnemyLevelDelta("EnemyLevelDelta", "Music::CombatPlayback",
 																"Minimum level difference b'ween the player and their nearest enemy", (SInt32)0);
 
-	SME::INI::INISetting			kBattleMusicDieRollChance("ChanceOfPlayback", "BattleMusic",
+	SME::INI::INISetting			kBattleMusicDieRollChance("ChanceOfPlayback", "Music::CombatPlayback",
 															"Chance, in percentage, of successful playback", (SInt32)50);
 
-	SME::INI::INISetting			kBattleMusicStopImmediatelyOnCombatEnd("StopImmediatelyOnCombatEnd", "BattleMusic",
+	SME::INI::INISetting			kBattleMusicStopImmediatelyOnCombatEnd("StopImmediatelyOnCombatEnd", "Music::CombatPlayback",
 																		"What he said", (SInt32)1);
 
+	SME::INI::INISetting			kBattleMusicStartPreviousTrackOnCombatEnd("StartPreviousTrackOnCombatEnd", "Music::CombatPlayback",
+																		"What he said", (SInt32)1);
+
+	SME::INI::INISetting			kBattleMusicRestorePreviousTrackPlaybackPosition("RestorePreviousTrackPlaybackPosition", "Music::CombatPlayback",
+																		"What he said", (SInt32)0);
 
 
-	SME::INI::INISetting			kMusicQueueImmediatelyOnCellChange("QueueImmediatelyOnCellChange", "Music",
+
+	SME::INI::INISetting			kMusicQueueImmediatelyOnCellChange("QueueImmediatelyOnCellChange", "Music::General",
 																	"Immediately change the current playing track to match the destination cell's music type", (SInt32)1);
 }
 
@@ -45,6 +53,8 @@ void TrifleINIManager::Initialize( const char* INIPath, void* Parameter )
 	RegisterSetting(&Settings::kBattleMusicEnemyLevelDelta);
 	RegisterSetting(&Settings::kBattleMusicDieRollChance);
 	RegisterSetting(&Settings::kBattleMusicStopImmediatelyOnCombatEnd);
+	RegisterSetting(&Settings::kBattleMusicStartPreviousTrackOnCombatEnd);
+	RegisterSetting(&Settings::kBattleMusicRestorePreviousTrackPlaybackPosition);
 	
 	RegisterSetting(&Settings::kMusicQueueImmediatelyOnCellChange);
 

@@ -1,4 +1,6 @@
 #include "Music.h"
+#include <dsound.h>
+#include <dshow.h>
 
 namespace Music
 {
@@ -20,13 +22,96 @@ namespace Music
 		return MusicType;
 	}
 
-	void PlayCurrentMusic( void )
+	void PlayCurrentMusic( UInt32 MusicType = kMusicType_Invalid, const char* FilePath = NULL )
 	{
-		UInt32 MusicType = GetCurrentMusicType();
+		if (MusicType == kMusicType_Invalid)
+			MusicType = GetCurrentMusicType();
 
-		if (thisCall<bool>(0x006AB160, (*g_osGlobals)->sound, MusicType, NULL, false))
+		if (thisCall<bool>(0x006AB160, (*g_osGlobals)->sound, MusicType, FilePath, false))
 			thisCall<UInt32>(0x006AB420, (*g_osGlobals)->sound);
 	}
+
+	void SetMusicPlaybackPosition ( LONGLONG Position )
+	{
+		OSSoundGlobals* SoundManager = (*g_osGlobals)->sound;
+		IMediaSeeking* SeekInterface = NULL;
+
+		SoundManager->filterGraph->QueryInterface(IID_IMediaSeeking, (void**)&SeekInterface);
+		if (SeekInterface)
+		{
+			LONGLONG Duration = 0;
+			SeekInterface->GetDuration(&Duration);
+
+			// we are using absolute positions
+			if (Position < Duration)
+			{
+				SeekInterface->SetPositions(&Position, AM_SEEKING_AbsolutePositioning, NULL, AM_SEEKING_NoPositioning);
+			}
+		}
+
+		SAFERELEASE_D3D(SeekInterface);
+	}
+
+	LONGLONG GetMusicPlaybackPosition ( void )
+	{
+		OSSoundGlobals* SoundManager = (*g_osGlobals)->sound;
+		IMediaSeeking* SeekInterface = NULL;
+		LONGLONG Position = -1;
+
+		SoundManager->filterGraph->QueryInterface(IID_IMediaSeeking, (void**)&SeekInterface);
+		if (SeekInterface)
+		{
+			SeekInterface->GetCurrentPosition(&Position);
+		}
+
+		SAFERELEASE_D3D(SeekInterface);
+		return Position;
+	}
+
+	struct MusicPlaybackState
+	{
+		UInt8			MusicType;
+		std::string		MusicFilename;
+		LONGLONG		PlaybackPosition;
+
+		void			Fill()
+		{
+			OSSoundGlobals* SoundManager = (*g_osGlobals)->sound;
+
+			MusicType = SoundManager->musicType;
+			MusicFilename = SoundManager->musicFileName;
+			PlaybackPosition = GetMusicPlaybackPosition();
+		}
+
+		void			Reset()
+		{
+			MusicType = kMusicType_Invalid;
+			MusicFilename.clear();
+			PlaybackPosition = -1;
+		}
+
+		bool			Restore( bool MustMatchCurrentMusicType = false, bool RestorePlaybackPosition = false )
+		{
+			OSSoundGlobals* SoundManager = (*g_osGlobals)->sound;
+			bool Result = false;
+
+			if (MusicType != kMusicType_Invalid && MusicFilename.empty() == false)
+			{
+				if (MustMatchCurrentMusicType == false || MusicType == GetCurrentMusicType())
+				{
+					Result = true;
+					PlayCurrentMusic(MusicType, MusicFilename.c_str());
+
+					if (PlaybackPosition != -1 && RestorePlaybackPosition)
+						SetMusicPlaybackPosition(PlaybackPosition);
+				}
+			}
+
+			return Result;
+		}
+	};
+
+	MusicPlaybackState			LastPlayedNonCombatTrack;
 	
 	_DefineHookHdlr(SoundManagerPlayBatleMusic, 0x00616285);
 	_DefineHookHdlr(SoundManagerBattleMusicPlayback, 0x006AD9FC);
@@ -34,7 +119,7 @@ namespace Music
 	_DefineJumpHdlr(PlayerCharacterChangeCellInterior, 0x0066EBE2, 0x0066EC17);
 	_DefineJumpHdlr(PlayerCharacterChangeCellExterior, 0x0066ECA9, 0x0066ECD8);
 	_DefineHookHdlr(SoundManagerQueueNextCombatTrack, 0x006AD787);
-	_DefineJumpHdlr(SoundManagerHandleCombatEnd, 0x006ADA2D, 0x006ADDF5);
+	_DefineHookHdlr(SoundManagerHandleCombatEnd, 0x006ADA2D);
 
 	bool __stdcall EvaluateBattleMusicPlaybackConditions(void)
 	{
@@ -151,6 +236,17 @@ namespace Music
 			}
 		}
 
+		// save current state
+		if (AllowMusicStart)
+		{
+			LastPlayedNonCombatTrack.Fill();
+			if (LastPlayedNonCombatTrack.MusicType == kMusicType_Battle)
+			{
+				_MESSAGE("Why are we allowing combat music to start when it's already active?!");
+				LastPlayedNonCombatTrack.Reset();
+			}
+		}
+
 		return AllowMusicStart;
 	}
 
@@ -240,13 +336,34 @@ namespace Music
 
 	bool __stdcall DoSoundManagerQueueNextCombatTrackHook(bool Result)
 	{
-		if (Settings::kBattleMusicStopImmediatelyOnCombatEnd.GetData().i == 0 &&
-			PlayerCombatState::Current() == false &&
-			(*g_osGlobals)->sound->musicType == kMusicType_Battle)
+		if (PlayerCombatState::Current() == false && (*g_osGlobals)->sound->musicType == kMusicType_Battle)
 		{
-			PlayCurrentMusic();
+			// combat's done, back to our original programme
 			Result = false;
+
+			if (Settings::kBattleMusicStopImmediatelyOnCombatEnd.GetData().i == 0)
+			{
+				if (Settings::kBattleMusicStartPreviousTrackOnCombatEnd.GetData().i)
+				{
+					if (LastPlayedNonCombatTrack.Restore(true, Settings::kBattleMusicRestorePreviousTrackPlaybackPosition.GetData().i))
+						return Result;
+				}
+				{
+					_MESSAGE("Couldn't restore previous track. Did the player switch cells?");
+				}
+
+				// fallback to the usual, pick the current music type and play it
+				PlayCurrentMusic();
+			}
+			else
+			{
+				// this should never happen
+				_MESSAGE("More strangeness! Combat's done and the music is set to stop immediately and yet we are here...");
+				PlayCurrentMusic();
+			}
 		}
+		else
+			;// do nothing, let the engine pick the next combat track
 
 		return Result;
 	}
@@ -258,9 +375,43 @@ namespace Music
 		_hhSetVar(Call, 0x006A8E80);
 		__asm
 		{
+			xor		eax, eax
 			call	_hhGetVar(Call)
-			push	al
+			push	eax
 			call	DoSoundManagerQueueNextCombatTrackHook
+
+			jmp		_hhGetVar(Retn)
+		}
+	}
+
+	void __stdcall DoSoundManagerHandleCombatEndHook(void)
+	{
+		if (Settings::kBattleMusicStopImmediatelyOnCombatEnd.GetData().i)
+		{
+			if (Settings::kBattleMusicStartPreviousTrackOnCombatEnd.GetData().i)
+			{
+				if (LastPlayedNonCombatTrack.Restore(true, Settings::kBattleMusicRestorePreviousTrackPlaybackPosition.GetData().i))
+					return;
+				else
+				{
+					_MESSAGE("Couldn't restore previous track. Did the player switch cells?");
+				}
+			}
+
+			// fallback to the usual, pick the current music type and play it
+			PlayCurrentMusic();
+		}
+		else
+			;// nothing to see here, the battle music track switch hook will take care of the rest
+	}
+
+	#define _hhName	SoundManagerHandleCombatEnd
+	_hhBegin()
+	{
+		_hhSetVar(Retn, 0x006ADDF5);
+		__asm
+		{			
+			call	DoSoundManagerHandleCombatEndHook
 
 			jmp		_hhGetVar(Retn)
 		}
@@ -271,17 +422,13 @@ namespace Music
 		_MemHdlr(SoundManagerPlayBatleMusic).WriteJump();
 		_MemHdlr(SoundManagerBattleMusicPlayback).WriteJump();
 		_MemHdlr(SoundManagerQueueNextCombatTrack).WriteJump();
+		_MemHdlr(SoundManagerHandleCombatEnd).WriteJump();
 
 		if (Settings::kMusicQueueImmediatelyOnCellChange.GetData().i == 0)
 		{
 			_MemHdlr(TESHandleCellChangeForSound).WriteJump();
 			_MemHdlr(PlayerCharacterChangeCellInterior).WriteJump();
 			_MemHdlr(PlayerCharacterChangeCellExterior).WriteJump();
-		}
-
-		if (Settings::kBattleMusicStopImmediatelyOnCombatEnd.GetData().i == 0)
-		{
-			_MemHdlr(SoundManagerHandleCombatEnd).WriteJump();
 		}
 	}
 

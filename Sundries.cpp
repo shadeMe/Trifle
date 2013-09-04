@@ -77,7 +77,7 @@ namespace Sundries
 		}
 	}
 
-		UInt32 __stdcall DoPlayerCharacterOnHealthDamageHook(PlayerCharacter* PC, Actor* Attacker, float Damage)
+	UInt32 __stdcall DoPlayerCharacterOnHealthDamageHook(PlayerCharacter* PC, Actor* Attacker, float Damage)
 	{
 		PlayerCombatState::LastKnownAttacker = Attacker;
 
