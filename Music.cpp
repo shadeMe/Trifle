@@ -28,7 +28,32 @@ namespace Music
 			MusicType = GetCurrentMusicType();
 
 		if (thisCall<bool>(0x006AB160, (*g_osGlobals)->sound, MusicType, FilePath, false))
+		{
 			thisCall<UInt32>(0x006AB420, (*g_osGlobals)->sound);
+		}
+		else
+		{
+#ifndef NDEBUG
+			_MESSAGE("Couldn't queue file for playback - File = %s, Type = %d", FilePath, MusicType);
+#endif // !NDEBUG
+		}
+	}
+
+	LONGLONG GetMusicPlaybackPosition ( void )
+	{
+		OSSoundGlobals* SoundManager = (*g_osGlobals)->sound;
+		IMediaSeeking* SeekInterface = NULL;
+		LONGLONG Position = -1, Duration = -1;
+
+		SoundManager->filterGraph->QueryInterface(IID_IMediaSeeking, (void**)&SeekInterface);
+		if (SeekInterface)
+		{
+			SeekInterface->GetDuration(&Duration);
+			SeekInterface->GetCurrentPosition(&Position);
+		}
+
+		SAFERELEASE_D3D(SeekInterface);
+		return Position;
 	}
 
 	void SetMusicPlaybackPosition ( LONGLONG Position )
@@ -37,6 +62,7 @@ namespace Music
 		IMediaSeeking* SeekInterface = NULL;
 
 		SoundManager->filterGraph->QueryInterface(IID_IMediaSeeking, (void**)&SeekInterface);
+
 		if (SeekInterface)
 		{
 			LONGLONG Duration = 0;
@@ -45,32 +71,31 @@ namespace Music
 			// we are using absolute positions
 			if (Position < Duration)
 			{
-				SeekInterface->SetPositions(&Position, AM_SEEKING_AbsolutePositioning, NULL, AM_SEEKING_NoPositioning);
+				HRESULT Result = S_OK;
+				if ((Result = SeekInterface->SetPositions(&Position, AM_SEEKING_AbsolutePositioning, NULL, AM_SEEKING_NoPositioning)) != S_OK)
+				{
+#ifndef NDEBUG
+					_MESSAGE("Couldn't set playback of the current track '%s' (Error: %d); Position = %d, Duration = %d",
+							SoundManager->musicFileName, Result, Position, Duration);
+#endif // !NDEBUG
+				}
 			}
 		}
-
-		SAFERELEASE_D3D(SeekInterface);
-	}
-
-	LONGLONG GetMusicPlaybackPosition ( void )
-	{
-		OSSoundGlobals* SoundManager = (*g_osGlobals)->sound;
-		IMediaSeeking* SeekInterface = NULL;
-		LONGLONG Position = -1;
-
-		SoundManager->filterGraph->QueryInterface(IID_IMediaSeeking, (void**)&SeekInterface);
-		if (SeekInterface)
+		else
 		{
-			SeekInterface->GetCurrentPosition(&Position);
+#ifndef NDEBUG
+			_MESSAGE("Couldn't initialize filter graph interfaces!");
+#endif // !NDEBUG
 		}
 
 		SAFERELEASE_D3D(SeekInterface);
-		return Position;
 	}
+
+
 
 	struct MusicPlaybackState
 	{
-		UInt8			MusicType;
+		UInt32			MusicType;
 		std::string		MusicFilename;
 		LONGLONG		PlaybackPosition;
 
@@ -99,6 +124,9 @@ namespace Music
 			{
 				if (MustMatchCurrentMusicType == false || MusicType == GetCurrentMusicType())
 				{
+#ifndef NDEBUG
+					_MESSAGE("Restoring music state: File = %s, Type = %d, Position = %d, ", MusicFilename.c_str(), MusicType, PlaybackPosition);
+#endif // !NDEBUG
 					Result = true;
 					PlayCurrentMusic(MusicType, MusicFilename.c_str());
 
@@ -347,9 +375,10 @@ namespace Music
 				{
 					if (LastPlayedNonCombatTrack.Restore(true, Settings::kBattleMusicRestorePreviousTrackPlaybackPosition.GetData().i))
 						return Result;
-				}
-				{
-					_MESSAGE("Couldn't restore previous track. Did the player switch cells?");
+					else
+					{
+						_MESSAGE("Couldn't restore previous track. Did the player switch cells?");
+					}
 				}
 
 				// fallback to the usual, pick the current music type and play it
@@ -371,7 +400,8 @@ namespace Music
 	#define _hhName	SoundManagerQueueNextCombatTrack
 	_hhBegin()
 	{
-		_hhSetVar(Retn, 0x006AD78C);
+		_hhSetVar(Retn, 0x006AD794);
+		_hhSetVar(Skip, 0x006ADDF5);
 		_hhSetVar(Call, 0x006A8E80);
 		__asm
 		{
@@ -379,8 +409,12 @@ namespace Music
 			call	_hhGetVar(Call)
 			push	eax
 			call	DoSoundManagerQueueNextCombatTrackHook
+			test	al, al
+			jz		EXIT
 
 			jmp		_hhGetVar(Retn)
+		EXIT:
+			jmp		_hhGetVar(Skip)
 		}
 	}
 
