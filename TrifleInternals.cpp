@@ -16,31 +16,45 @@ TrifleINIManager					TrifleINIManager::Instance;
 
 namespace Settings
 {
-	SME::INI::INISetting			kBattleMusicPlaybackMode("PlaybackMode", "Music::CombatPlayback",
-															"Battle music playback mode", (SInt32)Music::kBattleMusicPlaybackMode_Enabled);
+	SME::INI::INISetting	kBattleMusicPlaybackMode("PlaybackMode", "Music::Combat Playback",
+													"Battle music playback mode", (SInt32)Music::kBattleMusicPlaybackMode_Enabled);
 
-	SME::INI::INISetting			kBattleMusicMaximumEnemyDistance("MaximumEnemyDistance", "Music::CombatPlayback",
-																	"Maximum distance b'ween the player and their nearest enemy", (float)1000.0f);
+	SME::INI::INISetting	kBattleMusicMaximumEnemyDistance("MaximumEnemyDistance", "Music::Combat Playback",
+															"Maximum distance b'ween the player and their nearest enemy", (float)1000.0f);
 
-	SME::INI::INISetting			kBattleMusicEnemyLevelDelta("EnemyLevelDelta", "Music::CombatPlayback",
-																"Minimum level difference b'ween the player and their nearest enemy", (SInt32)0);
+	SME::INI::INISetting	kBattleMusicEnemyLevelDelta("EnemyLevelDelta", "Music::Combat Playback",
+														"Minimum level difference b'ween the player and their nearest enemy", (SInt32)0);
 
-	SME::INI::INISetting			kBattleMusicDieRollChance("ChanceOfPlayback", "Music::CombatPlayback",
-															"Chance, in percentage, of successful playback", (SInt32)50);
+	SME::INI::INISetting	kBattleMusicDieRollChance("ChanceOfPlayback", "Music::Combat Playback",
+													"Chance, in percentage, of successful playback", (SInt32)50);
 
-	SME::INI::INISetting			kBattleMusicStopImmediatelyOnCombatEnd("StopImmediatelyOnCombatEnd", "Music::CombatPlayback",
-																		"What he said", (SInt32)1);
+	SME::INI::INISetting	kBattleMusicStopImmediatelyOnCombatEnd("StopImmediatelyOnCombatEnd", "Music::Combat Playback",
+																"", (SInt32)1);
 
-	SME::INI::INISetting			kBattleMusicStartPreviousTrackOnCombatEnd("StartPreviousTrackOnCombatEnd", "Music::CombatPlayback",
-																		"What he said", (SInt32)1);
+	SME::INI::INISetting	kBattleMusicStartPreviousTrackOnCombatEnd("StartPreviousTrackOnCombatEnd", "Music::Combat Playback",
+																	"", (SInt32)1);
 
-	SME::INI::INISetting			kBattleMusicRestorePreviousTrackPlaybackPosition("RestorePreviousTrackPlaybackPosition", "Music::CombatPlayback",
-																		"What he said", (SInt32)0);
+	SME::INI::INISetting	kBattleMusicRestorePreviousTrackPlaybackPosition("RestorePreviousTrackPlaybackPosition", "Music::Combat Playback",
+																			"", (SInt32)0);
 
 
+	SME::INI::INISetting	kCooldownAfterCombatEnabled("Enabled", "Music::Cooldown AfterCombat", "", (SInt32)0);
+	SME::INI::INISetting	kCooldownAfterCombatRange("Range", "Music::Cooldown AfterCombat", "Range of the cooldown period, in earth minutes", "0.5-1.75");
 
-	SME::INI::INISetting			kMusicQueueImmediatelyOnCellChange("QueueImmediatelyOnCellChange", "Music::General",
-																	"Immediately change the current playing track to match the destination cell's music type", (SInt32)1);
+	SME::INI::INISetting	kCooldownExploreEnabled("Enabled", "Music::Cooldown Explore", "", (SInt32)0);
+	SME::INI::INISetting	kCooldownExploreRange("Range", "Music::Cooldown Explore", "Range of the cooldown period, in earth minutes", "0.5-1.75");
+
+	SME::INI::INISetting	kCooldownPublicEnabled("Enabled", "Music::Cooldown Public", "", (SInt32)0);
+	SME::INI::INISetting	kCooldownPublicRange("Range", "Music::Cooldown Public", "Range of the cooldown period, in earth minutes", "0.5-1.75");
+
+	SME::INI::INISetting	kCooldownDungeonEnabled("Enabled", "Music::Cooldown Dungeon", "", (SInt32)0);
+	SME::INI::INISetting	kCooldownDungeonRange("Range", "Music::Cooldown Dungeon", "Range of the cooldown period, in earth minutes", "0.5-1.75");
+
+
+	SME::INI::INISetting	kMusicQueueImmediatelyOnCellChange("QueueImmediatelyOnCellChange", "Music::General",
+															"Immediately change the current playing track to match the destination cell's music type", (SInt32)1);
+	
+	SME::INI::INISetting	kMusicAllowCombatToInterruptCooldown("AllowCombatToInterruptCooldown", "Music::General", "", (SInt32)1);
 }
 
 void TrifleINIManager::Initialize( const char* INIPath, void* Parameter )
@@ -55,8 +69,22 @@ void TrifleINIManager::Initialize( const char* INIPath, void* Parameter )
 	RegisterSetting(&Settings::kBattleMusicStopImmediatelyOnCombatEnd);
 	RegisterSetting(&Settings::kBattleMusicStartPreviousTrackOnCombatEnd);
 	RegisterSetting(&Settings::kBattleMusicRestorePreviousTrackPlaybackPosition);
+
+	RegisterSetting(&Settings::kCooldownAfterCombatEnabled);
+	RegisterSetting(&Settings::kCooldownAfterCombatRange);
+
+	RegisterSetting(&Settings::kCooldownExploreEnabled);
+	RegisterSetting(&Settings::kCooldownExploreRange);
+
+	RegisterSetting(&Settings::kCooldownPublicEnabled);
+	RegisterSetting(&Settings::kCooldownPublicRange);
+
+	RegisterSetting(&Settings::kCooldownDungeonEnabled);
+	RegisterSetting(&Settings::kCooldownDungeonRange);
+
 	
 	RegisterSetting(&Settings::kMusicQueueImmediatelyOnCellChange);
+	RegisterSetting(&Settings::kMusicAllowCombatToInterruptCooldown);
 
 	Save();
 }

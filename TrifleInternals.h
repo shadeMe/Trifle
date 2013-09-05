@@ -17,6 +17,7 @@
 #include <INIManager.h>
 #include <StringHelpers.h>
 #include <MersenneTwister.h>
+#include <MiscGunk.h>
 
 
 using namespace SME;
@@ -33,9 +34,9 @@ namespace Interfaces
 class TrifleINIManager : public INI::INIManager
 {
 public:
-	void								Initialize(const char* INIPath, void* Parameter);
+	void									Initialize(const char* INIPath, void* Parameter);
 
-	static TrifleINIManager			Instance;
+	static TrifleINIManager					Instance;
 };
 
 namespace Settings
@@ -48,7 +49,20 @@ namespace Settings
 	extern SME::INI::INISetting				kBattleMusicStartPreviousTrackOnCombatEnd;
 	extern SME::INI::INISetting				kBattleMusicRestorePreviousTrackPlaybackPosition;
 
+	extern SME::INI::INISetting				kCooldownAfterCombatEnabled;
+	extern SME::INI::INISetting				kCooldownAfterCombatRange;
+
+	extern SME::INI::INISetting				kCooldownExploreEnabled;
+	extern SME::INI::INISetting				kCooldownExploreRange;
+
+	extern SME::INI::INISetting				kCooldownPublicEnabled;
+	extern SME::INI::INISetting				kCooldownPublicRange;
+
+	extern SME::INI::INISetting				kCooldownDungeonEnabled;
+	extern SME::INI::INISetting				kCooldownDungeonRange;
+
 	extern SME::INI::INISetting				kMusicQueueImmediatelyOnCellChange;
+	extern SME::INI::INISetting				kMusicAllowCombatToInterruptCooldown;
 
 }
 

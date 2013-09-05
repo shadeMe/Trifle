@@ -7,7 +7,7 @@ IDebugLog	gLog("Trifle.log");
 
 static void LoadCallbackHandler(void * reserved)
 {
-	Music::LoadGameCallback();
+	Music::MusicManager::Instance.HandleLoadGame();
 }
 
 static void SaveCallbackHandler(void * reserved)
@@ -17,7 +17,7 @@ static void SaveCallbackHandler(void * reserved)
 
 static void NewGameCallbackHandler(void * reserved)
 {
-	Music::NewGameCallback();
+	Music::MusicManager::Instance.HandleNewGame();
 }
 
 void OBSEMessageHandler(OBSEMessagingInterface::Message* Msg)
