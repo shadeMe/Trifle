@@ -73,6 +73,7 @@ namespace PlayerCombatState
 	extern bool StateChanged;
 
 	extern Actor* LastKnownAttacker;
+	extern Actor* LastKnownAttackee;
 
 	bool Current(void);
 	bool Evaluate(void);

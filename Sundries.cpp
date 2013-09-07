@@ -3,7 +3,7 @@
 namespace Sundries
 {
 	_DefineHookHdlr(TESDataHandlerPopulatePluginList, 0x0044A3D4);
-	_DefinePatchHdlr(PlayerCharacterOnHealthDamage, 0x00A73DC4);
+	_DefineHookHdlr(ActorOnHealthDamage, 0x006034B0);
 
 
 	bool __stdcall FixPluginListPopulation(WIN32_FIND_DATA* FileData)
@@ -77,30 +77,45 @@ namespace Sundries
 		}
 	}
 
-	UInt32 __stdcall DoPlayerCharacterOnHealthDamageHook(PlayerCharacter* PC, Actor* Attacker, float Damage)
+	void __stdcall DoActorOnHealthDamageHook(Actor* Attacked, Actor* Attacker, float Damage)
 	{
-		PlayerCombatState::LastKnownAttacker = Attacker;
+		// only filled in when one of the actor's the player
+		PlayerCombatState::LastKnownAttacker = NULL;
+		PlayerCombatState::LastKnownAttackee = NULL;
+
+		if (Attacked && Attacked == *g_thePlayer)
+			PlayerCombatState::LastKnownAttackee = Attacked;
+
+		if (Attacker && Attacker == *g_thePlayer)
+			PlayerCombatState::LastKnownAttacker = Attacker;
 
 	#ifndef NDEBUG
-		if (Attacker)
-			_MESSAGE("Actor %s dealt the player %f points of health damage", Attacker->GetFullName()->name.m_data, Damage);
+		if (Attacker && Attacked)
+			_MESSAGE("Actor %s dealt actor %s %f points of health damage", Attacker->GetFullName()->name.m_data, Attacked->GetFullName()->name.m_data, Damage);
 	#endif // !NDEBUG
-
-		return thisCall<UInt32>(0x0065D6F0, PC, Attacker, Damage);
 	}
 
-	#define _hhName	PlayerCharacterOnHealthDamage
+	#define _hhName	ActorOnHealthDamage
 	_hhBegin()
 	{
+		_hhSetVar(Retn, 0x006034BB);
 		__asm
 		{	
 			mov		eax, [esp + 0x4]
 			mov		edx, [esp + 0x8]
+			pushad
 			push	edx
 			push	eax
 			push	ecx
-			call	DoPlayerCharacterOnHealthDamageHook
-			retn	0x8
+			call	DoActorOnHealthDamageHook
+			popad
+
+			push	esi
+			mov		esi, ecx
+			mov		eax, [esi]
+			mov		edx, [eax + 0x198]
+
+			jmp		_hhGetVar(Retn)
 		}
 	}
 
@@ -108,6 +123,6 @@ namespace Sundries
 	void Patch(void)
 	{
 		_MemHdlr(TESDataHandlerPopulatePluginList).WriteJump();
-		_MemHdlr(PlayerCharacterOnHealthDamage).WriteUInt32((UInt32)&PlayerCharacterOnHealthDamageHook);
+		_MemHdlr(ActorOnHealthDamage).WriteJump();
 	}
 }

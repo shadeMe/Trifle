@@ -5,7 +5,7 @@
 namespace Sundries
 {
 	_DeclareMemHdlr(TESDataHandlerPopulatePluginList, "fixes the plugin list init code to skip inactive files");
-	_DeclareMemHdlr(PlayerCharacterOnHealthDamage, "allows the detection of the player's health deduction");
+	_DeclareMemHdlr(ActorOnHealthDamage, "allows the detection of an actor's health deduction");
 
 	void Patch(void);
 }

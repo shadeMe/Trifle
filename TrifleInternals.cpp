@@ -96,6 +96,7 @@ namespace PlayerCombatState
 	bool StateChanged = false;
 
 	Actor* LastKnownAttacker = NULL;
+	Actor* LastKnownAttackee = NULL;
 
 	bool Current(void)
 	{
@@ -127,7 +128,6 @@ namespace PlayerCombatState
 				CombatStart = true;
 
 			kLastCombatState = CurrentState;
-			LastKnownAttacker = NULL;
 		}
 
 		return CurrentState;

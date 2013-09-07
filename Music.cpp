@@ -245,20 +245,17 @@ namespace Music
 					else
 					{
 #ifndef NDEBUG
-						if (Nearest)
-							_MESSAGE("Nearest combatant %s (%08X) at %f units from the player...", Nearest->GetFullName()->name.m_data, Nearest->refID, Distance);
+			//			_MESSAGE("Nearest combatant %s (%08X) at %f units from the player...", Nearest->GetFullName()->name.m_data, Nearest->refID, Distance);
 #endif // !NDEBUG
 
 						if ((PlaybackMode & kBattleMusicPlaybackMode_Distance))
 						{
 							float Maximum = Settings::kBattleMusicMaximumEnemyDistance.GetData().f;
-#ifndef NDEBUG
-							_MESSAGE("Checking nearest combatant distance...");
-#endif // !NDEBUG
+
 							if (Distance < Maximum)
 							{
 #ifndef NDEBUG
-								_MESSAGE("Success!");
+								_MESSAGE("Nearest combatant close enough - Success!");
 #endif // !NDEBUG
 								AllowMusicStart = true;
 							}
@@ -269,13 +266,11 @@ namespace Music
 							SInt32 LevelDelta = Settings::kBattleMusicEnemyLevelDelta.GetData().i;
 							UInt32 PlayerLevel = thisCall<UInt32>(0x005E1FD0, *g_thePlayer);
 							UInt32 CombatantLevel = thisCall<UInt32>(0x005E1FD0, Nearest);
-#ifndef NDEBUG
-							_MESSAGE("Nearest combatant at level %d...", CombatantLevel);
-#endif // !NDEBUG
+
 							if (CombatantLevel >= (PlayerLevel + LevelDelta))
 							{
 #ifndef NDEBUG
-								_MESSAGE("Success!");
+								_MESSAGE("Nearest combatant at level %d - Success!", CombatantLevel);
 #endif // !NDEBUG
 								AllowMusicStart = true;
 							}
@@ -284,10 +279,21 @@ namespace Music
 
 					if ((PlaybackMode & kBattleMusicPlaybackMode_FirstBlood))
 					{					
-						if (PlayerCombatState::LastKnownAttacker && PlayerCombatState::GetIsPlayerCombatant(PlayerCombatState::LastKnownAttacker))
+						if (PlayerCombatState::LastKnownAttackee == *g_thePlayer && 
+							PlayerCombatState::LastKnownAttacker && 
+							PlayerCombatState::GetIsPlayerCombatant(PlayerCombatState::LastKnownAttacker))
 						{
 #ifndef NDEBUG
 							_MESSAGE("Actor %s damaged the player!", PlayerCombatState::LastKnownAttacker->GetFullName()->name.m_data);
+#endif // !NDEBUG
+							AllowMusicStart = true;
+						}
+						else if (PlayerCombatState::LastKnownAttacker == *g_thePlayer && 
+								PlayerCombatState::LastKnownAttackee && 
+								PlayerCombatState::GetIsPlayerCombatant(PlayerCombatState::LastKnownAttacker))
+						{
+#ifndef NDEBUG
+							_MESSAGE("Player damaged actor %s!", PlayerCombatState::LastKnownAttackee->GetFullName()->name.m_data);
 #endif // !NDEBUG
 							AllowMusicStart = true;
 						}
@@ -387,7 +393,7 @@ namespace Music
 				_MESSAGE("Cooldown type %d ending...", CurrentCooldown);
 #endif // !NDEBUG
 
-				EndCooldown();
+				EndCooldown(false);
 			}
 		}
 	}
@@ -494,11 +500,15 @@ namespace Music
 		return true;
 	}
 
-	void MusicManager::EndCooldown( void )
+	void MusicManager::EndCooldown( bool Immediate )
 	{
 		SME_ASSERT(CurrentCooldown != kCooldown_None && CurrentCooldown != kCooldown_Ending);
 
-		CurrentCooldown = kCooldown_Ending;
+		if (Immediate)
+			CurrentCooldown = kCooldown_None;
+		else
+			CurrentCooldown = kCooldown_Ending;
+
 		CooldownCounter.Reset();
 	}
 
@@ -550,7 +560,7 @@ namespace Music
 					if (HandleCombatMusicStart())
 					{
 						// battle stations! resume regular processing
-						EndCooldown();
+						EndCooldown(true);
 						PlayMusic(kMusicType_Battle);
 					}
 				}

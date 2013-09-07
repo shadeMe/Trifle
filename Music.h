@@ -66,7 +66,7 @@ namespace Music
 		UInt32				CurrentCooldown;
 
 		bool				StartCooldown(UInt32 MusicType);		// returns true if the cooldown was successfully enabled
-		void				EndCooldown(void);
+		void				EndCooldown(bool Immediate);
 	public:
 		MusicManager();
 
