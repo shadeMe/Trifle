@@ -93,6 +93,8 @@ namespace Music
 
 	void MusicManager::PlayMusic( UInt32 MusicType /*= kMusicType_Invalid*/, const char* FilePath /*= NULL */ )
 	{
+		thisCall<UInt32>(0x006A8DB0, (*g_osGlobals)->sound);		// stop current playback
+
 		if (MusicType == kMusicType_Invalid)
 			MusicType = GetCurrentMusicType();
 
