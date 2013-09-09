@@ -93,8 +93,9 @@ namespace Music
 
 	void MusicManager::PlayMusic( UInt32 MusicType /*= kMusicType_Invalid*/, const char* FilePath /*= NULL */ )
 	{
-		thisCall<UInt32>(0x006A8DB0, (*g_osGlobals)->sound);		// stop current playback
-
+		thisCall<UInt32>(0x006AA170, (*g_osGlobals)->sound);		// release filter graph/stop current playback
+		(*g_osGlobals)->sound->musicFileName[0] = '\0';				// reset currently playing file name
+		
 		if (MusicType == kMusicType_Invalid)
 			MusicType = GetCurrentMusicType();
 
@@ -198,11 +199,6 @@ namespace Music
 				AllowMusicStart = true;
 			else if (PlaybackMode != kBattleMusicPlaybackMode_Disabled)
 			{
-#ifndef NDEBUG
-		//		_MESSAGE("Evaluating battle music conditions...");
-				gLog.Indent();
-#endif // !NDEBUG
-
 				if (PlaybackMode == kBattleMusicPlaybackMode_DieRoll)
 				{
 					// only checked when the player enters combat
@@ -301,9 +297,6 @@ namespace Music
 						}
 					}
 				}
-#ifndef NDEBUG
-				gLog.Outdent();
-#endif // !NDEBUG
 			}
 		}
 
@@ -319,6 +312,10 @@ namespace Music
 	bool MusicManager::HandleCombatMusicQueuing( void )
 	{
 		bool Result = true;
+
+#ifndef NDEBUG
+		_MESSAGE("MusicManager::HandleCombatMusicQueuing ---");
+#endif // !NDEBUG
 
 		if (PlayerCombatState::Current() == false && GetActiveMusicType() == kMusicType_Battle)
 		{
@@ -361,28 +358,35 @@ namespace Music
 
 	void MusicManager::HandleCombatMusicEnd( void )
 	{
-		if (Settings::kBattleMusicStopImmediatelyOnCombatEnd.GetData().i)
+		if (PlayerCombatState::Current() == false && GetActiveMusicType() == kMusicType_Battle)
 		{
-			if (StartCooldown(kMusicType_Battle))
-				return;
-
-			if (Settings::kBattleMusicStartPreviousTrackOnCombatEnd.GetData().i)
-			{
-				if (LastPlayedNonCombatTrack.Restore(true, Settings::kBattleMusicRestorePreviousTrackPlaybackPosition.GetData().i))
-					return;
-				else
-				{
 #ifndef NDEBUG
-					_MESSAGE("Couldn't restore previous track. Did the player switch cells?");
+			_MESSAGE("MusicManager::HandleCombatMusicEnd ---");
 #endif // !NDEBUG
-				}
-			}
 
-			// fallback to the usual, pick the current music type and play it
-			PlayMusic();
+			if (Settings::kBattleMusicStopImmediatelyOnCombatEnd.GetData().i)
+			{
+				if (StartCooldown(kMusicType_Battle))
+					return;
+
+				if (Settings::kBattleMusicStartPreviousTrackOnCombatEnd.GetData().i)
+				{
+					if (LastPlayedNonCombatTrack.Restore(true, Settings::kBattleMusicRestorePreviousTrackPlaybackPosition.GetData().i))
+						return;
+					else
+					{
+#ifndef NDEBUG
+						_MESSAGE("Couldn't restore previous track. Did the player switch cells?");
+#endif // !NDEBUG
+					}
+				}
+
+				// fallback to the usual, pick the current music type and play it
+				PlayMusic();
+			}
+			else
+				;// nothing to see here, HandleCombatMusicQueuing() will take care of the rest
 		}
-		else
-			;// nothing to see here, HandleCombatMusicQueuing() will take care of the rest
 	}
 
 	void MusicManager::Tick( void )
@@ -590,6 +594,13 @@ namespace Music
 		default:
 			return StartCooldown(MusicType) == false;
 		}
+	}
+
+	void MusicManager::SetActiveMusicType( UInt32 MusicType )
+	{
+		SME_ASSERT(MusicType != kMusicType_Invalid);
+
+		(*g_osGlobals)->sound->musicType = MusicType;
 	}
 
 

@@ -75,6 +75,7 @@ namespace Music
 		
 		UInt32				GetCurrentMusicType(void);				// returns the current cell's music type
 		UInt32				GetActiveMusicType(void);				// returns the currently playing music type
+		void				SetActiveMusicType(UInt32 MusicType);
 		LONGLONG			GetCurrentMusicPlaybackPosition(void);
 		void				SetCurrentMusicPlaybackPosition(LONGLONG Position);
 
