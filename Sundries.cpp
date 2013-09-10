@@ -79,15 +79,8 @@ namespace Sundries
 
 	void __stdcall DoActorOnHealthDamageHook(Actor* Attacked, Actor* Attacker, float Damage)
 	{
-		// only filled in when one of the actor's the player
-		PlayerCombatState::LastKnownAttacker = NULL;
-		PlayerCombatState::LastKnownAttackee = NULL;
-
-		if (Attacked && Attacked == *g_thePlayer)
-			PlayerCombatState::LastKnownAttackee = Attacked;
-
-		if (Attacker && Attacker == *g_thePlayer)
-			PlayerCombatState::LastKnownAttacker = Attacker;
+		PlayerCombatState::LastKnownAttackee = Attacked;
+		PlayerCombatState::LastKnownAttacker = Attacker;
 
 	#ifndef NDEBUG
 		if (Attacker && Attacked)

@@ -288,7 +288,7 @@ namespace Music
 						}
 						else if (PlayerCombatState::LastKnownAttacker == *g_thePlayer && 
 								PlayerCombatState::LastKnownAttackee && 
-								PlayerCombatState::GetIsPlayerCombatant(PlayerCombatState::LastKnownAttacker))
+								PlayerCombatState::GetIsPlayerCombatant(PlayerCombatState::LastKnownAttackee))
 						{
 #ifndef NDEBUG
 							_MESSAGE("Player damaged actor %s!", PlayerCombatState::LastKnownAttackee->GetFullName()->name.m_data);
@@ -305,6 +305,13 @@ namespace Music
 		{
 			LastPlayedNonCombatTrack.Fill();
 		}
+
+#ifndef NDEBUG
+		if (AllowMusicStart)
+		{
+			_MESSAGE("Starting combat music playback...");
+		}
+#endif // !NDEBUG
 
 		return AllowMusicStart;
 	}
@@ -532,6 +539,22 @@ namespace Music
 
 	bool MusicManager::HandleMusicPlayback( void )
 	{
+#ifndef NDEBUG
+		static char kMusicPath[MAX_PATH] = {0};
+		if (strlen((*g_osGlobals)->sound->musicFileName) && _stricmp(kMusicPath, (*g_osGlobals)->sound->musicFileName))
+		{
+			_MESSAGE("MusicManager::HandleMusicPlayback - Current track changed to %s", (*g_osGlobals)->sound->musicFileName);
+			memcpy(kMusicPath, (*g_osGlobals)->sound->musicFileName, strlen((*g_osGlobals)->sound->musicFileName) + 1);
+		}
+
+		static UInt32 kMusicType = kMusicType_Invalid;
+		if (kMusicType != GetActiveMusicType())
+		{
+			_MESSAGE("MusicManager::HandleMusicPlayback - Current music type changed to %d", GetActiveMusicType());
+			kMusicType = GetActiveMusicType();
+		}
+#endif // !NDEBUG
+
 		if (CurrentCooldown == kCooldown_None)
 			return true;
 		else if (CurrentCooldown == kCooldown_Ending)
