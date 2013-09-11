@@ -55,6 +55,9 @@ namespace Settings
 															"Immediately change the current playing track to match the destination cell's music type", (SInt32)1);
 	
 	SME::INI::INISetting	kMusicAllowCombatToInterruptCooldown("AllowCombatToInterruptCooldown", "Music::General", "", (SInt32)1);
+
+
+	SME::INI::INISetting	kPluginHooksMusic("PatchMusic", "Plugin::Hooks", "", (SInt32)1);
 }
 
 void TrifleINIManager::Initialize( const char* INIPath, void* Parameter )
@@ -85,6 +88,8 @@ void TrifleINIManager::Initialize( const char* INIPath, void* Parameter )
 	
 	RegisterSetting(&Settings::kMusicQueueImmediatelyOnCellChange);
 	RegisterSetting(&Settings::kMusicAllowCombatToInterruptCooldown);
+
+	RegisterSetting(&Settings::kPluginHooksMusic);
 
 	Save();
 }

@@ -845,19 +845,22 @@ namespace Music
 
 	void Patch(void)
 	{
-		_MemHdlr(SoundManagerPlayBatleMusic).WriteJump();
-		_MemHdlr(SoundManagerBattleMusicPlayback).WriteJump();
-		_MemHdlr(SoundManagerQueueNextCombatTrack).WriteJump();
-		_MemHdlr(SoundManagerHandleCombatEnd).WriteJump();
-		_MemHdlr(TESGameMainLoop).WriteJump();
-		_MemHdlr(SoundManagerMusicPlayback).WriteJump();
-		_MemHdlr(SoundManagerQueueNextTrack).WriteJump();
-
-		if (Settings::kMusicQueueImmediatelyOnCellChange.GetData().i == 0)
+		if (Settings::kPluginHooksMusic.GetData().i)
 		{
-			_MemHdlr(TESHandleCellChangeForSound).WriteJump();
-			_MemHdlr(PlayerCharacterChangeCellInterior).WriteJump();
-			_MemHdlr(PlayerCharacterChangeCellExterior).WriteJump();
+			_MemHdlr(SoundManagerPlayBatleMusic).WriteJump();
+			_MemHdlr(SoundManagerBattleMusicPlayback).WriteJump();
+			_MemHdlr(SoundManagerQueueNextCombatTrack).WriteJump();
+			_MemHdlr(SoundManagerHandleCombatEnd).WriteJump();
+			_MemHdlr(TESGameMainLoop).WriteJump();
+			_MemHdlr(SoundManagerMusicPlayback).WriteJump();
+			_MemHdlr(SoundManagerQueueNextTrack).WriteJump();
+
+			if (Settings::kMusicQueueImmediatelyOnCellChange.GetData().i == 0)
+			{
+				_MemHdlr(TESHandleCellChangeForSound).WriteJump();
+				_MemHdlr(PlayerCharacterChangeCellInterior).WriteJump();
+				_MemHdlr(PlayerCharacterChangeCellExterior).WriteJump();
+			}
 		}
 	}
 }

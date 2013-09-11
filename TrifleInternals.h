@@ -64,6 +64,8 @@ namespace Settings
 	extern SME::INI::INISetting				kMusicQueueImmediatelyOnCellChange;
 	extern SME::INI::INISetting				kMusicAllowCombatToInterruptCooldown;
 
+
+	extern SME::INI::INISetting				kPluginHooksMusic;
 }
 
 namespace PlayerCombatState
