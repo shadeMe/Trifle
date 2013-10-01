@@ -135,16 +135,25 @@ namespace Music
 		IMediaSeeking* SeekInterface = NULL;
 		LONGLONG Position = -1, Duration = -1;
 
-		SoundManager->filterGraph->QueryInterface(IID_IMediaSeeking, (void**)&SeekInterface);
-		if (SeekInterface)
+		if (SoundManager->filterGraph)
 		{
-			SeekInterface->GetDuration(&Duration);
-			SeekInterface->GetCurrentPosition(&Position);
+			SoundManager->filterGraph->QueryInterface(IID_IMediaSeeking, (void**)&SeekInterface);
+			if (SeekInterface)
+			{
+				SeekInterface->GetDuration(&Duration);
+				SeekInterface->GetCurrentPosition(&Position);
+			}
+			else
+			{
+#ifndef NDEBUG
+				_MESSAGE("Couldn't initialize filter graph interfaces!");
+#endif // !NDEBUG
+			}
 		}
 		else
 		{
 #ifndef NDEBUG
-			_MESSAGE("Couldn't initialize filter graph interfaces!");
+			_MESSAGE("Invalid filter graph!");
 #endif // !NDEBUG
 		}
 
@@ -157,8 +166,15 @@ namespace Music
 		OSSoundGlobals* SoundManager = (*g_osGlobals)->sound;
 		IMediaSeeking* SeekInterface = NULL;
 
-		SoundManager->filterGraph->QueryInterface(IID_IMediaSeeking, (void**)&SeekInterface);
+		if (SoundManager->filterGraph == NULL)
+		{
+#ifndef NDEBUG
+			_MESSAGE("Invalid filter graph!");
+#endif // !NDEBUG
+			return;
+		}
 
+		SoundManager->filterGraph->QueryInterface(IID_IMediaSeeking, (void**)&SeekInterface);
 		if (SeekInterface)
 		{
 			LONGLONG Duration = 0;
@@ -646,6 +662,10 @@ namespace Music
 
 	void __stdcall DoSoundManagerPlayBatleMusicHook(void)
 	{
+		SettingInfo* MusicEnabled = (SettingInfo*)0x00B16180;
+		if (MusicEnabled->u == 0)
+			return;
+
 		PlayerCombatState::Evaluate();
 
 		if (MusicManager::Instance.HandleCombatMusicStart())
