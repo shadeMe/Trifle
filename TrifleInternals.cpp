@@ -57,6 +57,12 @@ namespace Settings
 	SME::INI::INISetting	kMusicAllowCombatToInterruptCooldown("AllowCombatToInterruptCooldown", "Music::General", "", (SInt32)1);
 
 
+	SME::INI::INISetting	kGraphicsEnablePlayerFirstPersonShadow("EnableFirstPersonShadow", "Graphics::Player", "Show first person shadows for the PC", (SInt32)1);
+
+	SME::INI::INISetting	kBugFixHorseCorpseCollision("HorseCorpseCollision", "BugFix::General", "Fixes the jittering when riding a horse over a corpse", (SInt32)1);
+
+
+
 	SME::INI::INISetting	kPluginHooksMusic("PatchMusic", "Plugin::Hooks", "", (SInt32)1);
 }
 
@@ -88,6 +94,12 @@ void TrifleINIManager::Initialize( const char* INIPath, void* Parameter )
 	
 	RegisterSetting(&Settings::kMusicQueueImmediatelyOnCellChange);
 	RegisterSetting(&Settings::kMusicAllowCombatToInterruptCooldown);
+
+
+	RegisterSetting(&Settings::kGraphicsEnablePlayerFirstPersonShadow);
+
+	RegisterSetting(&Settings::kBugFixHorseCorpseCollision);
+
 
 	RegisterSetting(&Settings::kPluginHooksMusic);
 

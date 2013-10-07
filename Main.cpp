@@ -8,6 +8,7 @@ IDebugLog	gLog("Trifle.log");
 static void LoadCallbackHandler(void * reserved)
 {
 	Music::MusicManager::Instance.HandleLoadGame();
+	Sundries::FixHorseCorpseJittering();
 }
 
 static void SaveCallbackHandler(void * reserved)
@@ -18,6 +19,7 @@ static void SaveCallbackHandler(void * reserved)
 static void NewGameCallbackHandler(void * reserved)
 {
 	Music::MusicManager::Instance.HandleNewGame();
+	Sundries::FixHorseCorpseJittering();
 }
 
 void OBSEMessageHandler(OBSEMessagingInterface::Message* Msg)
