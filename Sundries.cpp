@@ -118,7 +118,8 @@ namespace Sundries
 	{
 		if (Settings::kGraphicsEnablePlayerFirstPersonShadow.GetData().i)
 		{
-			if ((*g_thePlayer)->IsThirdPerson() == false)
+			if ((*g_thePlayer)->IsThirdPerson() == false &&
+				*((UInt8*)0x00B3BB04) == 0)		// vanity cam mode
 			{
 				TESObjectREFR* Horse = thisVirtualCall<TESObjectREFR*>(0x380, *g_thePlayer);
 				UInt32 Refraction = thisCall<UInt32>(0x005E9670, *g_thePlayer);
@@ -160,7 +161,8 @@ namespace Sundries
 	{
 		if (Settings::kGraphicsEnablePlayerFirstPersonShadow.GetData().i)
 		{
-			if ((*g_thePlayer)->IsThirdPerson() == false)
+			if ((*g_thePlayer)->IsThirdPerson() == false &&
+				*((UInt8*)0x00B3BB04) == 0)
 			{
 				NiNode* ThirdPersonNode = thisCall<NiNode*>(0x00660110, *g_thePlayer, false);
 				if (ThirdPersonNode)
