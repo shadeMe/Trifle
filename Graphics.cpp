@@ -22,26 +22,24 @@ namespace Graphics
 		return *((UInt8*)0x00B3BB04) == 1;
 	}
 
+	NiObjectNET* __stdcall LookupNiObjectByName(NiObjectNET* Source, const char* Name)
+	{
+		return cdeclCall<NiObjectNET*>(0x006F94A0, Source, Name);
+	}
+
 	void __stdcall ToggleFaceGenNode(NiNode* Root, bool State)
 	{
 		SME_ASSERT(Root);
 
-		static const char* kFaceGenParts[9] = 
+		static const char* kFaceGenParts[2] = 
 		{
+			"Bip01 Head",
 			"FaceGenFace",
-			"FaceGenHair",
-			"FaceGenEars",
-			"FaceGenMouth",
-			"FaceGenTeethLower",
-			"FaceGenTeethUpper",
-			"FaceGenTongue",
-			"FaceGenEyeLeft",
-			"FaceGenEyeRight"
 		};
 
-		for (int i = 0; i < 9; i++)
+		for (int i = 0; i < 2; i++)
 		{
-			NiAVObject* Mesh = cdeclCall<NiAVObject*>(0x006F94A0, Root, kFaceGenParts[i]);
+			NiAVObject* Mesh = (NiAVObject*)LookupNiObjectByName(Root, kFaceGenParts[i]);
 			if (Mesh)
 			{
 				if (State == false)
@@ -180,9 +178,19 @@ namespace Graphics
 							{			
 								TODO("Fix crosshair and y-axis clamping")
 
-								CameraRootLocalTranslate->x = FaceGenNode->m_kWorldBound.x;
-								CameraRootLocalTranslate->y = FaceGenNode->m_kWorldBound.y;
-								CameraRootLocalTranslate->z = FaceGenNode->m_kWorldBound.z + FaceGenNode->m_kWorldBound.radius;
+								NiAVObject* CameraNode = NULL;
+						//		CameraNode = (NiAVObject*)LookupNiObjectByName(ThirdPersonNode, "Camera01");
+
+								if (CameraNode)
+								{
+									*CameraRootLocalTranslate = *(Vector3*)&CameraNode->m_worldTranslate;
+								}
+								else
+								{
+									CameraRootLocalTranslate->x = FaceGenNode->m_kWorldBound.x;
+									CameraRootLocalTranslate->y = FaceGenNode->m_kWorldBound.y;
+									CameraRootLocalTranslate->z = FaceGenNode->m_kWorldBound.z + FaceGenNode->m_kWorldBound.radius;
+								}
 
 								thisCall<void>(0x00707370, WorldCameraRoot, 0.0, 1);
 
