@@ -93,6 +93,20 @@ namespace Music
 
 	void MusicManager::PlayMusic( UInt32 MusicType /*= kMusicType_Invalid*/, const char* FilePath /*= NULL */ )
 	{
+		switch (GetActiveMusicType())
+		{
+		case kMusicType_Custom:
+		case kMusicType_Special:
+		case kMusicType_Undefined:
+		case kMusicType_Invalid:
+#ifndef NDEBUG
+			_MESSAGE("Special playback, we're outta here...");
+#endif // !NDEBUG
+			return;
+		}
+
+		ResetMusicVolume();
+
 		thisCall<UInt32>(0x006AA170, (*g_osGlobals)->sound);		// release filter graph/stop current playback
 		(*g_osGlobals)->sound->musicFileName[0] = '\0';				// reset currently playing file name
 		
