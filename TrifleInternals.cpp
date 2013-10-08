@@ -58,6 +58,13 @@ namespace Settings
 
 
 	SME::INI::INISetting	kGraphicsEnablePlayerFirstPersonShadow("EnableFirstPersonShadow", "Graphics::Player", "Show first person shadows for the PC", (SInt32)1);
+#ifndef NDEBUG
+	SME::INI::INISetting	kGraphicsEnablePlayerFirstPersonBody("EnableFirstPersonBody", "Graphics::Player", "Show first person body for the PC", (SInt32)1);
+#else
+	SME::INI::INISetting	kGraphicsEnablePlayerFirstPersonBody("EnableFirstPersonBody", "Graphics::Player", "Show first person body for the PC", (SInt32)0);
+#endif // !NDEBUG
+
+
 
 	SME::INI::INISetting	kBugFixHorseCorpseCollision("HorseCorpseCollision", "BugFix::General", "Fixes the jittering when riding a horse over a corpse", (SInt32)1);
 
@@ -97,6 +104,9 @@ void TrifleINIManager::Initialize( const char* INIPath, void* Parameter )
 
 
 	RegisterSetting(&Settings::kGraphicsEnablePlayerFirstPersonShadow);
+#ifndef NDEBUG
+	RegisterSetting(&Settings::kGraphicsEnablePlayerFirstPersonBody);
+#endif // !NDEBUG
 
 	RegisterSetting(&Settings::kBugFixHorseCorpseCollision);
 

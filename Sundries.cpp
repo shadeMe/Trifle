@@ -4,9 +4,6 @@ namespace Sundries
 {
 	_DefineHookHdlr(TESDataHandlerPopulatePluginList, 0x0044A3D4);
 	_DefineHookHdlr(ActorOnHealthDamage, 0x006034B0);
-	_DefineHookHdlr(PlayerFirstPersonShadow, 0x00407684);
-	_DefineHookHdlr(TESRender3DWorldShadows, 0x0040C91B);
-
 
 	bool __stdcall FixPluginListPopulation(WIN32_FIND_DATA* FileData)
 	{
@@ -114,98 +111,10 @@ namespace Sundries
 		}
 	}
 
-	void __stdcall EnumeratePC1PShadows(ShadowSceneNode* SceneRoot)
-	{
-		if (Settings::kGraphicsEnablePlayerFirstPersonShadow.GetData().i)
-		{
-			if ((*g_thePlayer)->IsThirdPerson() == false &&
-				*((UInt8*)0x00B3BB04) == 0)		// vanity cam mode
-			{
-				TESObjectREFR* Horse = thisVirtualCall<TESObjectREFR*>(0x380, *g_thePlayer);
-				UInt32 Refraction = thisCall<UInt32>(0x005E9670, *g_thePlayer);
-				UInt32 Invisibility = thisVirtualCall<UInt32>(0x284, *g_thePlayer, kActorVal_Invisibility);
-
-				if (Horse == NULL &&		// when not on horseback
-					Refraction == 0 &&		// zero refraction
-					Invisibility == 0)		// zero invisibility
-				{
-					NiNode* ThirdPersonNode = thisCall<NiNode*>(0x00660110, *g_thePlayer, false);
-					if (ThirdPersonNode)
-					{
-						thisCall<UInt32>(0x007C6C30, SceneRoot, ThirdPersonNode);
-					}
-				}
-			}
-		}
-	}
-
-	#define _hhName	PlayerFirstPersonShadow
-	_hhBegin()
-	{
-		_hhSetVar(Retn, 0x00407689);
-		_hhSetVar(Call, 0x007C6DE0);
-		__asm
-		{				
-			pushad
-			push	ecx
-			call	EnumeratePC1PShadows
-			popad
-
-
-			call	_hhGetVar(Call)
-			jmp		_hhGetVar(Retn)
-		}
-	}
-
-	void __stdcall TogglePC3PNode(bool State)
-	{
-		if (Settings::kGraphicsEnablePlayerFirstPersonShadow.GetData().i)
-		{
-			if ((*g_thePlayer)->IsThirdPerson() == false &&
-				*((UInt8*)0x00B3BB04) == 0)
-			{
-				NiNode* ThirdPersonNode = thisCall<NiNode*>(0x00660110, *g_thePlayer, false);
-				if (ThirdPersonNode)
-				{
-					if (State)
-						ThirdPersonNode->m_flags |= NiAVObject::kFlag_AppCulled;
-					else
-						ThirdPersonNode->m_flags &= ~NiAVObject::kFlag_AppCulled;
-				}
-			}
-		}
-	}
-
-	#define _hhName	TESRender3DWorldShadows
-	_hhBegin()
-	{
-		_hhSetVar(Retn, 0x0040C920);
-		_hhSetVar(Call, 0x004073D0);
-		__asm
-		{				
-			pushad
-			push	0
-			call	TogglePC3PNode
-			popad
-
-			call	_hhGetVar(Call)
-
-			pushad
-			push	1
-			call	TogglePC3PNode
-			popad
-
-			jmp		_hhGetVar(Retn)
-		}
-	}
-
-
 	void Patch(void)
 	{
 		_MemHdlr(TESDataHandlerPopulatePluginList).WriteJump();
 		_MemHdlr(ActorOnHealthDamage).WriteJump();
-		_MemHdlr(PlayerFirstPersonShadow).WriteJump();
-		_MemHdlr(TESRender3DWorldShadows).WriteJump();
 	}
 
 	void FixHorseCorpseJittering( void )

@@ -1,6 +1,7 @@
 #include "TrifleInternals.h"
 #include "Music.h"
 #include "Sundries.h"
+#include "Graphics.h"
 #include "VersionInfo.h"
 
 IDebugLog	gLog("Trifle.log");
@@ -100,6 +101,7 @@ extern "C"
 
 		Music::Patch();
 		Sundries::Patch();
+		Graphics::Patch();
 
 		return true;
 	}

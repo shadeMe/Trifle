@@ -66,6 +66,7 @@ namespace Settings
 	extern SME::INI::INISetting				kMusicAllowCombatToInterruptCooldown;
 
 	extern SME::INI::INISetting				kGraphicsEnablePlayerFirstPersonShadow;
+	extern SME::INI::INISetting				kGraphicsEnablePlayerFirstPersonBody;
 
 	extern SME::INI::INISetting				kBugFixHorseCorpseCollision;
 

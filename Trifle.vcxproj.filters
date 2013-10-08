@@ -61,6 +61,7 @@
     <ClCompile Include="TrifleInternals.cpp" />
     <ClCompile Include="Music.cpp" />
     <ClCompile Include="Sundries.cpp" />
+    <ClCompile Include="Graphics.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\obse\obse\GameActorValues.h">
@@ -126,6 +127,7 @@
     <ClInclude Include="TrifleInternals.h" />
     <ClInclude Include="Music.h" />
     <ClInclude Include="Sundries.h" />
+    <ClInclude Include="Graphics.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\obse\obse\GameRTTI_1_1.inl">

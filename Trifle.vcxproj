@@ -148,6 +148,7 @@
     <ClCompile Include="..\obse\obse\NiRTTI.cpp" />
     <ClCompile Include="..\obse\obse\Script.cpp" />
     <ClCompile Include="..\obse\obse\Utilities.cpp" />
+    <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Music.cpp" />
     <ClCompile Include="Sundries.cpp" />
@@ -173,6 +174,7 @@
     <ClInclude Include="..\obse\obse\PluginAPI.h" />
     <ClInclude Include="..\obse\obse\Script.h" />
     <ClInclude Include="..\obse\obse\Utilities.h" />
+    <ClInclude Include="Graphics.h" />
     <ClInclude Include="Music.h" />
     <ClInclude Include="Sundries.h" />
     <ClInclude Include="TrifleInternals.h" />
