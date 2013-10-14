@@ -42,27 +42,38 @@ namespace Graphics
 	{
 		SME_ASSERT(Root);
 
-		static const char* kTorchParts[2] = 
+		static const char* kTorchParts[17] = 
 		{
+			"FlameNode0",
 			"FlameNode1",
+			"FlameNode2",
+			"FlameNode3",
+			"FlameNode4",
+			"FlameNode5",
+			"FlameNode6",
+			"FlameNode7",
+			"FlameNode8",
+			"FlameNode9",
+			"FlameNode10",
+			"FlameNode11",
+			"FlameNode12",
+			"FlameNode13",
+			"FlameNode14",
+			"FlameNode15",
 			"FlameCap",
 		};
-		
-		NiAVObject* TorchNode = (NiAVObject*)LookupNiObjectByName(Root, "Torch");
-		if (TorchNode)
+
+		for (int i = 0; i < 17; i++)
 		{
-			for (int i = 0; i < 2; i++)
+			NiAVObject* Mesh = (NiAVObject*)LookupNiObjectByName(Root, kTorchParts[i]);
+			if (Mesh)
 			{
-				NiAVObject* Mesh = (NiAVObject*)LookupNiObjectByName(TorchNode, kTorchParts[i]);
-				if (Mesh)
-				{
-					if (State == false)
-						Mesh->m_flags |= NiAVObject::kFlag_AppCulled;
-					else
-						Mesh->m_flags &= ~NiAVObject::kFlag_AppCulled;
-				}
-			}		
-		}
+				if (State == false)
+					Mesh->m_flags |= NiAVObject::kFlag_AppCulled;
+				else
+					Mesh->m_flags &= ~NiAVObject::kFlag_AppCulled;
+			}
+		}		
 	}
 	
 	void __stdcall TogglePC3PNode(bool State)
