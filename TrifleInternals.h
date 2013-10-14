@@ -12,6 +12,10 @@
 #include "obse/NiTypes.h"
 #include "obse/ParamInfos.h"
 #include "obse/GameActorValues.h"
+#include "obse/GameProcess.h"
+#include "obse/NiControllers.h"
+#include "obse/NiNodes.h"
+#include "obse/NiObjects.h"
 
 #include <SME_Prefix.h>
 #include <MemoryHandler.h>
@@ -66,7 +70,6 @@ namespace Settings
 	extern SME::INI::INISetting				kMusicAllowCombatToInterruptCooldown;
 
 	extern SME::INI::INISetting				kGraphicsEnablePlayerFirstPersonShadow;
-	extern SME::INI::INISetting				kGraphicsEnablePlayerFirstPersonBody;
 
 	extern SME::INI::INISetting				kBugFixHorseCorpseCollision;
 

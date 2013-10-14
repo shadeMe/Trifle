@@ -58,11 +58,6 @@ namespace Settings
 
 
 	SME::INI::INISetting	kGraphicsEnablePlayerFirstPersonShadow("EnableFirstPersonShadow", "Graphics::Player", "Show first person shadows for the PC", (SInt32)1);
-#ifndef NDEBUG
-	SME::INI::INISetting	kGraphicsEnablePlayerFirstPersonBody("EnableFirstPersonBody", "Graphics::Player", "Show first person body for the PC", (SInt32)1);
-#else
-	SME::INI::INISetting	kGraphicsEnablePlayerFirstPersonBody("EnableFirstPersonBody", "Graphics::Player", "Show first person body for the PC", (SInt32)0);
-#endif // !NDEBUG
 
 
 
@@ -104,9 +99,7 @@ void TrifleINIManager::Initialize( const char* INIPath, void* Parameter )
 
 
 	RegisterSetting(&Settings::kGraphicsEnablePlayerFirstPersonShadow);
-#ifndef NDEBUG
-	RegisterSetting(&Settings::kGraphicsEnablePlayerFirstPersonBody);
-#endif // !NDEBUG
+
 
 	RegisterSetting(&Settings::kBugFixHorseCorpseCollision);
 

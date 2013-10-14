@@ -563,6 +563,9 @@ namespace Music
 
 	void MusicManager::HandleLoadGame( void )
 	{
+		if (Settings::kPluginHooksMusic.GetData().i == 0)
+			return;
+
 		ResetMusicVolume();
 		PlayMusic();
 	}
