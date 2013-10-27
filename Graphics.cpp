@@ -80,6 +80,13 @@ namespace Graphics
 	{
 		if ((*g_thePlayer)->IsThirdPerson() == false && GetVanityCamState() == false)
 		{
+			TESObjectREFR* Horse = thisVirtualCall<TESObjectREFR*>(0x380, *g_thePlayer);
+			UInt32 Refraction = thisCall<UInt32>(0x005E9670, *g_thePlayer);
+			UInt32 Invisibility = thisVirtualCall<UInt32>(0x284, *g_thePlayer, kActorVal_Invisibility);
+
+			if (Horse && (Refraction || Invisibility))	// don't show if invisible on horseback
+				return;
+
 			NiNode* ThirdPersonNode = thisCall<NiNode*>(0x00660110, *g_thePlayer, false);
 			if (ThirdPersonNode)
 			{
