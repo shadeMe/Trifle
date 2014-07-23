@@ -88,7 +88,10 @@ namespace Music
 
 	void MusicManager::ResetMusicVolume( void )
 	{
-		thisCall<UInt32>(0x006AA1A0, (*g_osGlobals)->sound, (*g_osGlobals)->sound->musicVolume, true);
+		float Volume = (*g_osGlobals)->sound->musicVolume;
+
+		thisCall<UInt32>(0x006AA1A0, (*g_osGlobals)->sound, 0.0f, false);
+		thisCall<UInt32>(0x006AA1A0, (*g_osGlobals)->sound, Volume, true);
 	}
 
 	void MusicManager::PlayMusic( UInt32 MusicType /*= kMusicType_Invalid*/, const char* FilePath /*= NULL */ )

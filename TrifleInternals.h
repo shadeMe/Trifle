@@ -39,7 +39,12 @@ namespace Interfaces
 class TrifleINIManager : public INI::INIManager
 {
 public:
-	void									Initialize(const char* INIPath, void* Parameter);
+	virtual ~TrifleINIManager()
+	{
+		;//
+	}
+
+	virtual void							Initialize(const char* INIPath, void* Parameter);
 
 	static TrifleINIManager					Instance;
 };

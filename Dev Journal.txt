@@ -1,5 +1,6 @@
 To-Do
 ======
+> BUG: Music volume gets constantly reset to 0
 > Improve LOD loading
 	http://forums.bethsoft.com/topic/1473226-rel-trifle/?p=23058714
 > New music types/playlists - Regions, TOD based, etc
