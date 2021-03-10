@@ -4,6 +4,7 @@ namespace Sundries
 {
 	_DefineHookHdlr(TESDataHandlerPopulatePluginList, 0x0044A3D4);
 	_DefineHookHdlr(ActorOnHealthDamage, 0x006034B0);
+	_DefinePatchHdlr(DialogueMenuSpeakResponse, 0x006018E0 + 1);
 
 	bool __stdcall FixPluginListPopulation(WIN32_FIND_DATA* FileData)
 	{
@@ -92,7 +93,7 @@ namespace Sundries
 	{
 		_hhSetVar(Retn, 0x006034BB);
 		__asm
-		{	
+		{
 			mov		eax, [esp + 0x4]
 			mov		edx, [esp + 0x8]
 			pushad
@@ -115,6 +116,9 @@ namespace Sundries
 	{
 		_MemHdlr(TESDataHandlerPopulatePluginList).WriteJump();
 		_MemHdlr(ActorOnHealthDamage).WriteJump();
+
+		if (Settings::kDialoguePlayMenuDialogueIn3D().i)
+			_MemHdlr(DialogueMenuSpeakResponse).WriteUInt8(0);
 	}
 
 	void FixHorseCorpseJittering( void )
@@ -141,5 +145,4 @@ namespace Sundries
 			}
 		}
 	}
-
 }

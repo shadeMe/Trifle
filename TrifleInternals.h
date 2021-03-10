@@ -78,6 +78,7 @@ namespace Settings
 
 	extern SME::INI::INISetting				kBugFixHorseCorpseCollision;
 
+	extern SME::INI::INISetting				kDialoguePlayMenuDialogueIn3D;
 
 	extern SME::INI::INISetting				kPluginHooksMusic;
 }

@@ -130,18 +130,13 @@
     <ClInclude Include="Graphics.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\obse\obse\GameRTTI_1_1.inl">
-      <Filter>OBSE</Filter>
-    </None>
-    <None Include="..\obse\obse\GameRTTI_1_2.inl">
-      <Filter>OBSE</Filter>
-    </None>
     <None Include="..\obse\obse\GameRTTI_1_2_416.inl">
       <Filter>OBSE</Filter>
     </None>
     <None Include="Exports.def">
       <Filter>OBSE</Filter>
     </None>
+    <None Include="EnvVars.props" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="VersionInfo.rc">

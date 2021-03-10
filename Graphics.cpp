@@ -4,7 +4,7 @@ namespace Graphics
 {
 	_DefineHookHdlr(PlayerFirstPersonShadow, 0x00407684);
 	_DefineHookHdlr(TESRender3DWorldShadows, 0x0040C91B);
-	
+
 	bool __stdcall GetVanityCamState()
 	{
 		return *((UInt8*)0x00B3BB04) == 1;
@@ -19,7 +19,7 @@ namespace Graphics
 	{
 		SME_ASSERT(Root);
 
-		static const char* kFaceGenParts[2] = 
+		static const char* kFaceGenParts[2] =
 		{
 			"Bip01 Head",
 			"FaceGenFace",
@@ -35,14 +35,14 @@ namespace Graphics
 				else
 					Mesh->m_flags &= ~NiAVObject::kFlag_AppCulled;
 			}
-		}		
+		}
 	}
 
 	void __stdcall ToggleTorchNode(NiNode* Root, bool State)
 	{
 		SME_ASSERT(Root);
 
-		static const char* kTorchParts[17] = 
+		static const char* kTorchParts[17] =
 		{
 			"FlameNode0",
 			"FlameNode1",
@@ -73,9 +73,9 @@ namespace Graphics
 				else
 					Mesh->m_flags &= ~NiAVObject::kFlag_AppCulled;
 			}
-		}		
+		}
 	}
-	
+
 	void __stdcall TogglePC3PNode(bool State)
 	{
 		if ((*g_thePlayer)->IsThirdPerson() == false && GetVanityCamState() == false)
@@ -112,7 +112,7 @@ namespace Graphics
 
 		return (NiNode*)((SceneGraph*)(*g_worldSceneGraph))->m_children.data[0];
 	}
-		
+
 	void __stdcall EnumeratePC1PShadows(ShadowSceneNode* SceneRoot)
 	{
 		if ((*g_thePlayer)->IsThirdPerson() == false && GetVanityCamState() == false)
@@ -140,7 +140,7 @@ namespace Graphics
 		_hhSetVar(Retn, 0x00407689);
 		_hhSetVar(Call, 0x007C6DE0);
 		__asm
-		{				
+		{
 			pushad
 			push	ecx
 			call	EnumeratePC1PShadows
@@ -150,7 +150,7 @@ namespace Graphics
 			call	_hhGetVar(Call)
 			jmp		_hhGetVar(Retn)
 		}
-	}	
+	}
 
 	#define _hhName	TESRender3DWorldShadows
 	_hhBegin()
@@ -158,7 +158,7 @@ namespace Graphics
 		_hhSetVar(Retn, 0x0040C920);
 		_hhSetVar(Call, 0x004073D0);
 		__asm
-		{				
+		{
 			pushad
 			push	1
 			call	TogglePC3PNode
@@ -173,7 +173,7 @@ namespace Graphics
 
 			jmp		_hhGetVar(Retn)
 		}
-	}	
+	}
 
 	void Patch(void)
 	{

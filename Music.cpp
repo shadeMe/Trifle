@@ -112,7 +112,7 @@ namespace Music
 
 		thisCall<UInt32>(0x006AA170, (*g_osGlobals)->sound);		// release filter graph/stop current playback
 		(*g_osGlobals)->sound->musicFileName[0] = '\0';				// reset currently playing file name
-		
+
 		if (MusicType == kMusicType_Invalid)
 			MusicType = GetCurrentMusicType();
 
@@ -309,9 +309,9 @@ namespace Music
 					}
 
 					if ((PlaybackMode & kBattleMusicPlaybackMode_FirstBlood))
-					{					
-						if (PlayerCombatState::LastKnownAttackee == *g_thePlayer && 
-							PlayerCombatState::LastKnownAttacker && 
+					{
+						if (PlayerCombatState::LastKnownAttackee == *g_thePlayer &&
+							PlayerCombatState::LastKnownAttacker &&
 							PlayerCombatState::GetIsPlayerCombatant(PlayerCombatState::LastKnownAttacker))
 						{
 #ifndef NDEBUG
@@ -319,8 +319,8 @@ namespace Music
 #endif // !NDEBUG
 							AllowMusicStart = true;
 						}
-						else if (PlayerCombatState::LastKnownAttacker == *g_thePlayer && 
-								PlayerCombatState::LastKnownAttackee && 
+						else if (PlayerCombatState::LastKnownAttacker == *g_thePlayer &&
+								PlayerCombatState::LastKnownAttackee &&
 								PlayerCombatState::GetIsPlayerCombatant(PlayerCombatState::LastKnownAttackee))
 						{
 #ifndef NDEBUG
@@ -494,7 +494,7 @@ namespace Music
 
 		if (Enabled->GetData().i == 0)
 			return false;
-		
+
 		std::string RangeString = Range->GetData().s;
 		int Separator = 0;
 		if (RangeString.length() < 3 || (Separator = RangeString.find("-")) == std::string::npos || RangeString.length() < Separator + 1)
@@ -530,7 +530,7 @@ namespace Music
 
 #ifndef NDEBUG
 		_MESSAGE("Cooldown type %d has a range of %f-%f", CooldownType, MinTime, MaxTime);
-#endif // !NDEBUG	
+#endif // !NDEBUG
 
 		SME::MersenneTwister::init_genrand(GetTickCount());
 		double Duration = SME::MersenneTwister::genrand_real2() * (MaxTime - MinTime);
@@ -538,7 +538,7 @@ namespace Music
 
 #ifndef NDEBUG
 		_MESSAGE("Cooldown type %d set to %f earth minutes", CooldownType, Duration);
-#endif // !NDEBUG	
+#endif // !NDEBUG
 
 		CurrentCooldown = CooldownType;
 		CooldownCounter.Start(Duration * 60.0f);
@@ -663,7 +663,7 @@ namespace Music
 	}
 
 
-	
+
 	_DefineHookHdlr(SoundManagerPlayBatleMusic, 0x00616285);
 	_DefineHookHdlr(SoundManagerBattleMusicPlayback, 0x006AD9FC);
 	_DefineJumpHdlr(TESHandleCellChangeForSound, 0x00440BBC, 0x00440BDA);
@@ -715,7 +715,7 @@ namespace Music
 		__asm
 		{
 			mov		ecx, 0x00B3C0EC
-			movzx	ecx, byte ptr [ecx]	
+			movzx	ecx, byte ptr [ecx]
 			test	ecx, ecx
 			jnz		CONTINUECURRENTMUSIC			// we're in the main menu, we better sod off
 
@@ -737,10 +737,10 @@ namespace Music
 			call	EvaluateBattleMusicPlaybackConditions
 			test	ah, ah							// check if we got here from the auxiliary location
 			jnz		SKIPCOMBATMUSICPROLOG			// different exit point when combat music is already playing
-		
+
 			test	al, al
-			jz		SKIPCOMBATMUSICEPILOG			
-	
+			jz		SKIPCOMBATMUSICEPILOG
+
 			jmp		_hhGetVar(AllowMusic)
 		RECHECKSNDMGR:
 			movzx	eax, [esi + 0xB0]
@@ -804,7 +804,7 @@ namespace Music
 	{
 		_hhSetVar(Retn, 0x006ADDF5);
 		__asm
-		{			
+		{
 			call	DoSoundManagerHandleCombatEndHook
 
 			jmp		_hhGetVar(Retn)

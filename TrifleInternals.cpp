@@ -53,7 +53,7 @@ namespace Settings
 
 	SME::INI::INISetting	kMusicQueueImmediatelyOnCellChange("QueueImmediatelyOnCellChange", "Music::General",
 															"Immediately change the current playing track to match the destination cell's music type", (SInt32)1);
-	
+
 	SME::INI::INISetting	kMusicAllowCombatToInterruptCooldown("AllowCombatToInterruptCooldown", "Music::General", "", (SInt32)1);
 
 
@@ -63,6 +63,7 @@ namespace Settings
 
 	SME::INI::INISetting	kBugFixHorseCorpseCollision("HorseCorpseCollision", "BugFix::General", "Fixes the jittering when riding a horse over a corpse", (SInt32)1);
 
+	SME::INI::INISetting	kDialoguePlayMenuDialogueIn3D("PlayMenuDialogueIn3D", "Dialogue::General", "Plays menumode dialogue with 3D locational data to enable full support for EAX/HRTF modifications", (SInt32)1);
 
 
 	SME::INI::INISetting	kPluginHooksMusic("PatchMusic", "Plugin::Hooks", "", (SInt32)1);
@@ -93,7 +94,7 @@ void TrifleINIManager::Initialize( const char* INIPath, void* Parameter )
 	RegisterSetting(&Settings::kCooldownDungeonEnabled);
 	RegisterSetting(&Settings::kCooldownDungeonRange);
 
-	
+
 	RegisterSetting(&Settings::kMusicQueueImmediatelyOnCellChange);
 	RegisterSetting(&Settings::kMusicAllowCombatToInterruptCooldown);
 
@@ -102,6 +103,7 @@ void TrifleINIManager::Initialize( const char* INIPath, void* Parameter )
 
 
 	RegisterSetting(&Settings::kBugFixHorseCorpseCollision);
+	RegisterSetting(&Settings::kDialoguePlayMenuDialogueIn3D);
 
 
 	RegisterSetting(&Settings::kPluginHooksMusic);
